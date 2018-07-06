@@ -10,16 +10,29 @@ require_relative '../docker_hosts'
 require 'hosts'
 
 # @see https://github.com/aef/hosts
-class Kamaze::DockerHosts::File < Hosts::File
+class Kamaze::DockerHosts::File < Aef::Hosts::File
   autoload :Pathname, 'pathname'
 
   # Initializes a file.
   #
-  # @param [Pathname] path path to the hosts file
+  # @param [String|Pathname|nil] path path to the hosts file
   def initialize(path = '/etc/hosts')
     reset
-    self.path = Pathname.new(path)
-    self.read
+    self.path = path
+
+    unless path.nil?
+      read if self.path.file? and self.path.readable?
+    end
+  end
+
+  class << self
+    # Parses a hosts file given as String.
+    #
+    # @param [String] data a String representation of the hosts file
+    # @return [Aef::Hosts::File] a file
+    def parse(data)
+      new(nil).parse(data)
+    end
   end
 
   # Retrieves sections by name.
