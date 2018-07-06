@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
     ".yardopts",
     "lib/kamaze-docker_hosts.rb",
     "lib/kamaze/docker_hosts.rb",
+    "lib/kamaze/docker_hosts/file.rb",
     "lib/kamaze/docker_hosts/version.rb",
     "lib/kamaze/docker_hosts/version.yml",
   ]
