@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'pathname'
+
+Pathname.new(__dir__).join('..', 'lib', 'kamaze-docker_hosts.rb').tap do |file|
+  require_relative file if file.file?
+end
+
+require 'kamaze/docker_hosts/cli'
+require 'sys/proc'
+
+Pathname.new(__FILE__)
+        .basename.to_s
+        .tap { |progname| Sys::Proc.progname = progname }
+
+Kamaze::DockerHosts::Cli.new.tap { |cli| exit cli.call }
