@@ -6,9 +6,11 @@ source 'https://rubygems.org'
 
 group :default do
   gem 'docker-api', '~> 1.34'
+  gem 'hanami-cli', '~> 0.2'
   gem 'hosts', '~> 0.1'
   gem 'kamaze-version', '~> 1.0'
   gem 'sys-proc', '~> 1.1', '>= 1.1.2'
+  gem 'terminal-table' # , '~> 0.3'
 end
 
 group :development do
