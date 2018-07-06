@@ -14,8 +14,8 @@ require_relative '../docker_hosts'
 #
 # ```
 # {
-#   "project_web" => #<IPAddr: IPv4:172.17.0.2/255.255.255.255>,
-#   "project_db" => #<IPAddr: IPv4:172.17.0.3/255.255.255.255>
+#   "project_web" => [#<IPAddr: IPv4:172.17.0.2/255.255.255.255>],
+#   "project_db" => [#<IPAddr: IPv4:172.17.0.3/255.255.255.255>]
 # }
 # ```
 class Kamaze::DockerHosts::Network < Hash
@@ -113,7 +113,7 @@ class Kamaze::DockerHosts::Network < Hash
     #
     # @param [Hash] info
     # @return [Hash|nil]
-    def extract_hosts(info)
+    def extract_hosts(info) # rubocop:disable Metrics/MethodLength
       {}.tap do |rows|
         nets  = info['NetworkSettings']['Networks'].to_h
         names = info['Names'].to_a.map { |name| name.gsub(%r{^\/}, '') }
@@ -121,7 +121,9 @@ class Kamaze::DockerHosts::Network < Hash
         names.each { |name| rows[name.to_s] = nil }
         nets.each do |_name, network|
           rows.each do |k, v|
-            rows[k] = IPAddr.new(network['IPAddress']) if network['IPAddress']
+            next unless network['IPAddress']
+
+            rows[k] = rows[k].to_a.push(IPAddr.new(network['IPAddress']))
           end
         end
       end
