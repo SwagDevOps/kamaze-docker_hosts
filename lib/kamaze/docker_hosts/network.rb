@@ -24,24 +24,28 @@ class Kamaze::DockerHosts::Network < Hash
   # @see https://github.com/excon/excon
   autoload :Excon, 'excon'
 
+  # Get extension used on hosts.
+  #
   # @return [String|nil]
   attr_reader :extension
 
   def initialize
-    @extension = nil
     begin
       @memento = self.class.hosts
     rescue Excon::Error::Socket
       @memento = nil
     end
 
-    self.memento.to_h.each { |host, ip| self[host] = ip }
+    self.reset
   end
 
-  # Denotes memento has been populated.
+  # Denote network is available.
+  #
+  # When network is down, an exception is raised,
+  # as a result, memento is set to ``nil``.
   #
   # @return [Boolean]
-  def memento?
+  def available?
     !self.memento.nil?
   end
 
@@ -51,14 +55,25 @@ class Kamaze::DockerHosts::Network < Hash
   #
   # @return [self]
   def extension=(extension)
-    clear.tap do |hsh|
-      memento.each do |host, ip|
+    clear.tap do
+      memento.to_h.each do |host, ip|
         host = "#{host}.#{extension}" unless host.to_s.empty?
 
-        hsh[host] = ip
+        self[host] = ip
       end
 
       @extension = extension
+    end
+  end
+
+  # Restore original state.
+  #
+  # @return [self]
+  def reset
+    self.tap do
+      @extension = nil
+
+      memento.to_h.each { |host, ip| self[host] = ip }
     end
   end
 
