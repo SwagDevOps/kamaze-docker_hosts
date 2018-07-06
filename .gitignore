@@ -11,7 +11,8 @@
 /Vagrantfile
 /vendor/
 !/.env
+!/.gitignore
 !/.rspec
 !/.rubocop.yml
-!/.gitignore
 !/.solargraph.yml
+!/.yardopts
