@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
     "lib/kamaze-docker_hosts.rb",
     "lib/kamaze/docker_hosts.rb",
     "lib/kamaze/docker_hosts/file.rb",
+    "lib/kamaze/docker_hosts/network.rb",
     "lib/kamaze/docker_hosts/version.rb",
     "lib/kamaze/docker_hosts/version.yml",
   ]
