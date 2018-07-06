@@ -18,10 +18,18 @@ Gem::Specification.new do |s|
   # requires version >= 2.3.0 due to safe navigation operator &
   s.required_ruby_version = ">= 2.3.0"
   s.require_paths = ["lib"]
+  s.bindir        = "bin"
+  s.executables   = ["docker-hosts"]
   s.files = [
     ".yardopts",
+    "bin/docker-hosts",
     "lib/kamaze-docker_hosts.rb",
     "lib/kamaze/docker_hosts.rb",
+    "lib/kamaze/docker_hosts/cli.rb",
+    "lib/kamaze/docker_hosts/cli/commands.rb",
+    "lib/kamaze/docker_hosts/cli/commands/network.rb",
+    "lib/kamaze/docker_hosts/cli/commands/version.rb",
+    "lib/kamaze/docker_hosts/errno.rb",
     "lib/kamaze/docker_hosts/file.rb",
     "lib/kamaze/docker_hosts/network.rb",
     "lib/kamaze/docker_hosts/version.rb",
@@ -29,9 +37,11 @@ Gem::Specification.new do |s|
   ]
 
   s.add_runtime_dependency("docker-api", ["~> 1.34"])
+  s.add_runtime_dependency("hanami-cli", ["~> 0.2"])
   s.add_runtime_dependency("hosts", ["~> 0.1"])
   s.add_runtime_dependency("kamaze-version", ["~> 1.0"])
   s.add_runtime_dependency("sys-proc", [">= 1.1.2", "~> 1.1"])
+  s.add_runtime_dependency("terminal-table", ["~> 1.8"])
 end
 
 # Local Variables:
