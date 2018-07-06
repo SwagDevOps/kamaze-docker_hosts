@@ -144,7 +144,7 @@ DEPENDENCIES
   rubocop (~> 0.56)
   sham (~> 2.0)
   sys-proc (~> 1.1, >= 1.1.2)
-  terminal-table
+  terminal-table (~> 1.8)
   yard (~> 0.9)
 
 BUNDLED WITH

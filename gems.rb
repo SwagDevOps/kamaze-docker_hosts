@@ -10,7 +10,7 @@ group :default do
   gem 'hosts', '~> 0.1'
   gem 'kamaze-version', '~> 1.0'
   gem 'sys-proc', '~> 1.1', '>= 1.1.2'
-  gem 'terminal-table' # , '~> 0.3'
+  gem 'terminal-table', '~> 1.8'
 end
 
 group :development do
