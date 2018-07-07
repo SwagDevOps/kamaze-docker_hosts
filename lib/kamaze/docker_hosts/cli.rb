@@ -12,7 +12,7 @@ require 'hanami/cli'
 # ```
 class Kamaze::DockerHosts::Cli < Hanami::CLI
   autoload :Commands, "#{__dir__}/cli/commands"
-  autoload :InterruptError, "#{__dir__}/cli/interrupt_error"
+  autoload :Command, "#{__dir__}/cli/command"
 
   # Create a new instance
   def initialize
@@ -25,19 +25,13 @@ class Kamaze::DockerHosts::Cli < Hanami::CLI
   # @param [IO] out the standard output
   # @return [Integer]
   def call(arguments: ARGV.clone.freeze, out: $stdout)
+    require_relative 'cli/command/interrupt_error'
+
     result = commands.get(arguments)
 
     return usage(result, out) unless result.found?
 
-    # Callbacks are removed
-    parse(result, out).tap do |command, args|
-      begin
-        return command.call(args).to_i
-      rescue Kamaze::DockerHosts::Cli::Command::InterruptError => e
-        warn(e)
-        return e.status
-      end
-    end
+    execute(*parse(result, out))
   end
 
   # Prints the command usage and exit.
@@ -49,5 +43,20 @@ class Kamaze::DockerHosts::Cli < Hanami::CLI
     super
   rescue SystemExit
     return 22
+  end
+
+  protected
+
+  # Execute given command.
+  #
+  # @param [Hanami::CLI::Command] command
+  # @param [Hash] args
+  # @return [Integer]
+  def execute(command, args)
+    command.call(args)
+    return 0
+  rescue Command::InterruptError => e
+    warn(e.to_s) unless e.to_s.empty?
+    return e.status
   end
 end
