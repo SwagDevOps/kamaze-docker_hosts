@@ -10,11 +10,18 @@ require_relative '../../errno'
 class Kamaze::DockerHosts::Cli::Command::InterruptError < ::StandardError
   include Kamaze::DockerHosts::Errno
   attr_reader :status
+  attr_reader :message
 
   # @param [String] message
   def initialize(message)
     super
+    @message = message
     self.status = :EPERM
+  end
+
+  # @return [Integer]
+  def to_s
+    message.to_s
   end
 
   # @return [Integer]
