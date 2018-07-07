@@ -5,6 +5,8 @@ require 'hanami/cli'
 
 # @abstract
 class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
+  autoload :InterruptError, "#{__dir__}/command/interrupt_error"
+
   class << self
     def enable_network
       require_relative '../network'
@@ -28,8 +30,6 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
   # @param [Symbol|Integer] status
   # @raise [Kamaze::DockerHosts::Cli::InterruptError]
   def interrupt(message, status = :EPERM)
-    require_relative 'command/interrupt_error'
-
     InterruptError.new(message).tap do |err|
       err.status = status
       raise err
