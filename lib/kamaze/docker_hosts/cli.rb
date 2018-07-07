@@ -12,6 +12,7 @@ require 'hanami/cli'
 # ```
 class Kamaze::DockerHosts::Cli < Hanami::CLI
   autoload :Commands, "#{__dir__}/cli/commands"
+  autoload :InterruptError, "#{__dir__}/cli/interrupt_error"
 
   # Create a new instance
   def initialize
