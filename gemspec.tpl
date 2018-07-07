@@ -1,18 +1,8 @@
 # frozen_string_literal: true
 # vim: ai ts=2 sts=2 et sw=2 ft=ruby
 # rubocop:disable all
-<?rb
-@files = [
-  '.yardopts',
-  'bin/*',
-  'lib/**/*.rb',
-  'lib/**/*.yml'
-].map { |m| Dir.glob(m) }.flatten.keep_if { |f| File.file?(f) }.sort
-
-@executables = Dir.glob('bin/*').map { |f| File.basename(f) }
-
-self.singleton_class.define_method(:quote) { |input| input.to_s.inspect }
-?>
+<?rb self.singleton_class
+         .define_method(:quote) { |input| input.to_s.inspect } ?>
 
 Gem::Specification.new do |s|
   s.name        = #{quote(@name)}
@@ -31,12 +21,13 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 2.3.0"
   s.require_paths = ["lib"]
   s.bindir        = "bin"
-  s.executables   = #{@executables}
+  s.executables   = "docker-hosts"
   s.files = [
-    <?rb for file in @files ?>
-    #{"%s," % quote(file)}
-    <?rb end ?>
-  ]
+    ".yardopts",
+    "bin/*",
+    "lib/**/*.rb",
+    "lib/**/*.yml",
+  ].map { |m| Dir.glob(m) }.flatten.sort
 
   #{@dependencies.keep(:runtime).to_s.lstrip}
 end

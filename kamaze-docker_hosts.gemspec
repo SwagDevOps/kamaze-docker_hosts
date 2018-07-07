@@ -19,22 +19,13 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 2.3.0"
   s.require_paths = ["lib"]
   s.bindir        = "bin"
-  s.executables   = ["docker-hosts"]
+  s.executables   = "docker-hosts"
   s.files = [
     ".yardopts",
-    "bin/docker-hosts",
-    "lib/kamaze-docker_hosts.rb",
-    "lib/kamaze/docker_hosts.rb",
-    "lib/kamaze/docker_hosts/cli.rb",
-    "lib/kamaze/docker_hosts/cli/commands.rb",
-    "lib/kamaze/docker_hosts/cli/commands/network.rb",
-    "lib/kamaze/docker_hosts/cli/commands/version.rb",
-    "lib/kamaze/docker_hosts/errno.rb",
-    "lib/kamaze/docker_hosts/file.rb",
-    "lib/kamaze/docker_hosts/network.rb",
-    "lib/kamaze/docker_hosts/version.rb",
-    "lib/kamaze/docker_hosts/version.yml",
-  ]
+    "bin/*",
+    "lib/**/*.rb",
+    "lib/**/*.yml",
+  ].map { |m| Dir.glob(m) }.flatten.sort
 
   s.add_runtime_dependency("docker-api", ["~> 1.34"])
   s.add_runtime_dependency("hanami-cli", ["~> 0.2"])
