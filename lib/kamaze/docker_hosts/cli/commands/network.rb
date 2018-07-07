@@ -13,7 +13,7 @@ class Kamaze::DockerHosts::Cli
            {
              desc: 'Display raw values',
              type: :boolean,
-             default: false
+             default: !tty?(:stdout)
            }
     # rubocop:enable Style/BracesAroundHashParameters
 
