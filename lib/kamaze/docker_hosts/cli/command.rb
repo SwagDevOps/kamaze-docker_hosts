@@ -8,6 +8,8 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
   autoload :InterruptError, "#{__dir__}/command/interrupt_error"
 
   class << self
+    protected
+
     def enable_network
       require_relative '../network'
 
@@ -18,6 +20,25 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
         # rubocop:disable Style/AccessModifierDeclarations
         self.singleton_class.class_eval { protected :network }
         # rubocop:enable Style/AccessModifierDeclarations
+      end
+    end
+
+    # Denote current outputs are ``tty``.
+    #
+    # Possible values are: ``[both, stdout, stderr]``.
+    #
+    # @raise [ArgumentError]
+    # @return [Boolean]
+    def tty?(where = nil)
+      res = {
+        stderr: ($stderr.respond_to?(:tty?) and $stderr.tty?),
+        stdout: ($stdout.respond_to?(:tty?) and $stdout.tty?),
+      }.tap { |hsh| hsh.merge!(both: (hsh[:stdout] and hsh[:stderr])) }
+
+      begin
+        res.fetch((where || :both).to_sym)
+      rescue KeyError
+        raise ArgumentError, "#{where} not in #{res.keys.reverse}"
       end
     end
   end
@@ -41,5 +62,10 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
     self.class.__send__(:network).clone
   rescue NoMethodError
     nil
+  end
+
+  # @return [Boolean]
+  def tty?(*args)
+    self.class.__send__(:tty?, args)
   end
 end
