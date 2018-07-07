@@ -2,6 +2,7 @@
 
 require_relative '../cli'
 require 'hanami/cli'
+require_relative 'command'
 
 class Kamaze::DockerHosts::Cli
   # CLI commands module
