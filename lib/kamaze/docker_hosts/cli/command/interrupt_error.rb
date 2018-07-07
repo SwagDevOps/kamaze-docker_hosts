@@ -31,7 +31,7 @@ class Kamaze::DockerHosts::Cli::Command::InterruptError < ::StandardError
 
   # Set status
   #
-  # @param [Integer|Symbol]
+  # @param [Integer|Symbol] status
   def status=(status)
     @status = status.is_a?(Integer) ? status : errno(status)
   end
