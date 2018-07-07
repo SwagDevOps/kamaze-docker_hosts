@@ -30,13 +30,7 @@ class Kamaze::DockerHosts::Network < Hash
   attr_reader :extension
 
   def initialize
-    begin
-      @memento = self.class.hosts
-    rescue Excon::Error::Socket
-      @memento = nil
-    end
-
-    self.reset
+    reload!
   end
 
   # Denote network is available.
@@ -64,6 +58,19 @@ class Kamaze::DockerHosts::Network < Hash
 
       @extension = extension
     end
+  end
+
+  # Reload itself.
+  #
+  # @return [self]
+  def reload!
+    begin
+      @memento = self.class.hosts
+    rescue Excon::Error::Socket
+      @memento = nil
+    end
+
+    self.reset
   end
 
   # Restore original state.
