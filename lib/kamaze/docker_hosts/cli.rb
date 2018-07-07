@@ -30,8 +30,11 @@ class Kamaze::DockerHosts::Cli < Hanami::CLI
 
     # Callbacks are removed
     parse(result, out).tap do |command, args|
-      command.call(args).tap do |res|
-        return res.is_a?(Integer) ? res : 0
+      begin
+        return command.call(args).to_i
+      rescue Kamaze::DockerHosts::Cli::Command::InterruptError => e
+        warn(e)
+        return e.status
       end
     end
   end
