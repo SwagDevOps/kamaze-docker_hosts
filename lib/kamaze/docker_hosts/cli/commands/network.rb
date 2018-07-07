@@ -1,61 +1,54 @@
 # frozen_string_literal: true
 
 require_relative '../commands'
-require_relative '../../network'
-require_relative '../../errno'
 require 'terminal-table'
 
-# Display network status
-class Kamaze::DockerHosts::Cli::Commands::Network < Hanami::CLI::Command
-  desc 'Display network status'
-  option :raw, desc: 'Display raw values', \
-               type: :boolean, default: false
+class Kamaze::DockerHosts::Cli
+  # Display network status
+  class Commands::Network < Command
+    enable_network
+    desc 'Display network status'
+    # rubocop:disable Style/BracesAroundHashParameters
+    option :raw, \
+           {
+             desc: 'Display raw values',
+             type: :boolean,
+             default: false
+           }
+    # rubocop:enable Style/BracesAroundHashParameters
 
-  include Kamaze::DockerHosts::Errno
+    def call(**options)
+      interrupt('Network unavailable.', :ENETDOWN) unless network.available?
+      interrupt(nil, :NOERROR) if network.empty?
 
-  def call(**options)
-    network = self.network
-
-    unless network.available?
-      warn('Network unavailable.')
-      return errno(:ENETDOWN) # 100
+      $stdout.puts(render(network, options.fetch(:raw)))
     end
 
-    return if network.empty?
-    $stdout.puts(render(network, options.fetch(:raw)))
-  end
+    protected
 
-  protected
+    # Prepare network rendering.
+    #
+    # @param [Kamaze::DockerHosts::Network] network
+    # @return [Array]
+    def prepare(network)
+      network = network.to_a.map(&:flatten)
+      max = network.map(&:size).max
 
-  # @return [Kamaze::DockerHosts::Network]
-  def network
-    Kamaze::DockerHosts::Network.new
-  end
+      network.map { |row| row.push(*([nil] * (max - row.size))) }
+    end
 
-  # Prepare network rendering.
-  #
-  # @param [Kamaze::DockerHosts::Network] network
-  # @return [Array]
-  def prepare(network)
-    network = network.to_a.map(&:flatten)
-    max = network.map(&:size).max
+    def render(network, raw = false) # rubocop:disable Metrics/MethodLength
+      return if network.empty?
 
-    network.map { |row| row.push(*([nil] * (max - row.size))) }
-  end
-
-  def render(network, raw = false) # rubocop:disable Metrics/MethodLength
-    return if network.empty?
-
-    Terminal::Table.new do |table|
-      table.rows = prepare(network)
-      if raw
+      Terminal::Table.new do |table|
+        table.rows = prepare(network)
         table.style = {
           border_top: false,
           border_bottom: false,
           border_y: '',
           padding_left: 0,
           padding_right: 4,
-        }
+        }.public_send(raw ? :to_h : :clear)
       end
     end
   end
