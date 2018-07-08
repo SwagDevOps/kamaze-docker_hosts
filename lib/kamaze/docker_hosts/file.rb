@@ -73,6 +73,9 @@ class Kamaze::DockerHosts::File < Kamaze::DockerHosts::BaseFile
   # @type [Symbol|nil]
   attr_accessor :updating
 
+  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable Metrics/MethodLength
+
   # Applies update on given instance.
   #
   # @param [self] instance
@@ -81,12 +84,22 @@ class Kamaze::DockerHosts::File < Kamaze::DockerHosts::BaseFile
     instance.tap do |hosts|
       hosts.elements.delete_if do |elem|
         elem.is_a?(Aef::Hosts::Section) and elem.name == self.updating.to_s
-      end.tap do |elements|
+      end.tap do
         loop do
           break unless hosts.elements.last.is_a?(Aef::Hosts::EmptyElement)
           hosts.elements.delete_at(-1)
         end
-      end.push(section(updating))
+      end.tap do
+        args = [
+          hosts.elements.empty? ? nil : Aef::Hosts::EmptyElement.new,
+          section(updating)
+        ].compact
+
+        hosts.elements.push(*args)
+      end
     end
   end
+
+  # rubocop:enable Metrics/AbcSize
+  # rubocop:enable Metrics/MethodLength
 end
