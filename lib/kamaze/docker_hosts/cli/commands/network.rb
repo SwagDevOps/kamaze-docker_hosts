@@ -18,8 +18,8 @@ class Kamaze::DockerHosts::Cli
     # rubocop:enable Style/BracesAroundHashParameters
 
     def call(**options)
-      interrupt(:ENETDOWN, 'Network unavailable.') unless network.available?
-      interrupt(:NOERROR) if network.empty?
+      halt(:ENETDOWN, 'Network unavailable.') unless network.available?
+      halt(:NOERROR) if network.empty?
 
       $stdout.puts(render(network, options.fetch(:raw)))
     end

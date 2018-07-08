@@ -51,7 +51,7 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
   # @param [String] message
   #
   # @raise [Kamaze::DockerHosts::Cli::InterruptError]
-  def interrupt(status, message = nil)
+  def halt(status, message = nil)
     InterruptError.new(message).tap do |err|
       err.status = status
       raise err
