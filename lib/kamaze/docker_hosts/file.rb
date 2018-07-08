@@ -19,10 +19,7 @@ class Kamaze::DockerHosts::File < Aef::Hosts::File
   def initialize(path = '/etc/hosts')
     reset
     self.path = path
-
-    unless path.nil?
-      read if self.path.file? and self.path.readable?
-    end
+    autoread
   end
 
   class << self
@@ -35,18 +32,14 @@ class Kamaze::DockerHosts::File < Aef::Hosts::File
     end
   end
 
-  # Retrieves sections by name.
-  #
-  # @return [Array<Aef::Hosts::Section>]
-  def sections(name)
-    elements
-      .keep_if { |elem| elem.is_a?(Aef::Hosts::Section) and elem.name == name }
-  end
+  protected
 
-  # Denotes sections exist.
-  #
-  # @return [Boolean]
-  def sections?(name)
-    !sections(name).empty?
+  # @return [self]
+  def autoread
+    unless path.nil?
+      read if self.path.file? and self.path.readable?
+    end
+
+    self
   end
 end
