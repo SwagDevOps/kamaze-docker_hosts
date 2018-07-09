@@ -1,0 +1,10 @@
+# @see https://github.com/swipely/docker-api#host
+# @see https://github.com/swipely/docker-api#ssl
+---
+url:
+#url: 'tcp://example.com:5422'
+options:
+#  client_cert: 'cert.pem'
+#  client_key: 'key.pem'
+#  sl_ca_file: 'ca.pem'
+#  scheme: 'https'
