@@ -47,7 +47,7 @@ class Kamaze::DockerHosts::Cli::Config < Figgy
     def roots
       [
         Pathname.new(__dir__).join('config'),
-        Pathname.new('/etc').join($PROGRAM_NAME),
+        Pathname.new('/etc').join(progname),
       ]
     end
   end
