@@ -17,6 +17,8 @@ GEM
     equatable (0.5.0)
     excon (0.62.0)
     ffi (1.9.25)
+    figgy (1.3.0)
+      json
     github-markup (2.0.1)
     hanami-cli (0.2.0)
       concurrent-ruby (~> 1.0)
@@ -29,6 +31,7 @@ GEM
       linebreak (~> 2.0.1)
     interesting_methods (0.1.2)
     jaro_winkler (1.5.1)
+    json (2.1.0)
     kamaze-project (1.0.4)
       cli-ui (~> 1.1)
       cliver (~> 0.3)
@@ -130,6 +133,7 @@ PLATFORMS
 
 DEPENDENCIES
   docker-api (~> 1.34)
+  figgy (~> 1.3)
   github-markup (~> 2.0)
   hanami-cli (~> 0.2)
   hosts (~> 0.1)
