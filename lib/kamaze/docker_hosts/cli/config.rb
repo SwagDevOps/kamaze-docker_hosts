@@ -25,11 +25,9 @@ class Kamaze::DockerHosts::Cli::Config < Figgy
     # @return [Figgy] a Figgy instance using the configuration
     def build
       config = Figgy::Configuration.new.tap do |c|
+        c.preload = true
         c.root = roots.fetch(0)
-        c.add_root(roots.fetch(1))
-
-        # config.foo is read from etc/foo.yml
-        c.define_overlay :default, nil
+        roots[1..-1].each { |path| c.add_root(roots.fetch(1)) }
       end
 
       yield(config) if block_given?
@@ -43,6 +41,8 @@ class Kamaze::DockerHosts::Cli::Config < Figgy
       $PROGRAM_NAME
     end
 
+    # Get default root paths.
+    #
     # @return [Array<Pathname>]
     def roots
       [
