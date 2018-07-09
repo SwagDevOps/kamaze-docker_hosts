@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../cli'
+require_relative '../docker_hosts'
 require 'figgy'
 
 # Provide access to configuration files.
@@ -17,7 +17,7 @@ require 'figgy'
 # ```
 #
 # @see https://github.com/pd/figgy
-class Kamaze::DockerHosts::Cli::Config < Figgy
+class Kamaze::DockerHosts::Config < Figgy
   autoload :Pathname, 'pathname'
 
   class << self

@@ -2,8 +2,8 @@
 
 require 'hanami/cli'
 require_relative '../cli'
+require_relative '../config'
 require_relative '../network'
-require_relative 'config'
 
 # @abstract
 class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
@@ -31,7 +31,7 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
     def configurable
       option :config, \
              desc: 'Configuration directory',
-             default: Kamaze::DockerHosts::Cli::Config.roots.last.to_s
+             default: Kamaze::DockerHosts::Config.roots.last.to_s
     end
 
     # Denote current outputs are ``tty``.
@@ -75,7 +75,7 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
   # @raise [KeyError]
   # @return [self]
   def configure(options)
-    Kamaze::DockerHosts::Cli::Config.build do |c|
+    Kamaze::DockerHosts::Config.build do |c|
       c.add_root(options.fetch(:config))
     end.tap do |config|
       self.singleton_class.define_method(:_config) { config }
