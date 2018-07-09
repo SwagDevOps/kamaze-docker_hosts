@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 2.3.0"
   s.require_paths = ["lib"]
   s.bindir        = "bin"
-  s.executables   = "docker-hosts"
+  s.executables   = ["docker-hosts"]
   s.files = [
     ".yardopts",
     "bin/*",
