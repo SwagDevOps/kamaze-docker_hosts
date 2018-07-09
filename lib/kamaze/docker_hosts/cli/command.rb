@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require_relative '../cli'
 require 'hanami/cli'
+require_relative '../cli'
+require_relative '../network'
+require_relative 'config'
 
 # @abstract
 class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
   autoload :InterruptError, "#{__dir__}/command/interrupt_error"
-  require_relative 'config'
-  require_relative '../network'
 
   class << self
     protected
@@ -16,14 +16,13 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
     #
     # @see #network()
     def enable_network
-      Kamaze::DockerHosts::Network.new.tap do |network|
-        @network = network
-
-        self.singleton_class.define_method(:network) { network }
-        # rubocop:disable Style/AccessModifierDeclarations
-        self.singleton_class.class_eval { protected :network }
-        # rubocop:enable Style/AccessModifierDeclarations
+      # rubocop:disable Style/AccessModifierDeclarations
+      self.singleton_class.class_eval do
+        attr_accessor :network
+        protected 'network='
+        protected :network
       end
+      # rubocop:enable Style/AccessModifierDeclarations
     end
 
     # Set config option.
@@ -114,9 +113,44 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
   # @todo configure network from ``config``.
   # @return [Kamaze::DockerHosts::Network|nil]
   def network
-    self.class.__send__(:network).clone
+    network = self.class.__send__(:network)
   rescue NoMethodError
-    nil
+    return
+  else
+    # store network
+    network || self.class.__send__('network=', network_setup)
+  end
+
+  # @return [self]
+  #
+  # @see https://github.com/swipely/docker-api#host
+  # @see https://github.com/swipely/docker-api#ssl
+  def configure_docker
+    require 'docker'
+    return unless config
+
+    config.docker.tap do |config|
+      [:options, :url].each do |method|
+        config.public_send(method).tap do |val|
+          Docker.public_send("#{method}=", val) if val
+        end
+      end
+    end
+
+    self
+  end
+
+  # @return [Kamaze::DockerHosts::Network]
+  def network_setup
+    configure_docker
+    Kamaze::DockerHosts::Network.new.tap do |network|
+      if config
+        # apply network config
+        config.network.extension.tap do |extension|
+          network.extension = extension unless extension.to_s.empty?
+        end
+      end
+    end
   end
 
   # @return [Boolean]
