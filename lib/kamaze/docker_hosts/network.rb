@@ -47,9 +47,10 @@ class Kamaze::DockerHosts::Network < Hash
   #
   # Extension is applied on records.
   #
+  # @param [String] extension
   # @return [self]
   def extension=(extension)
-    extension = extension.to_s.empty? ? nil : extension.to_s
+    @extension = extension.to_s.empty? ? nil : extension.to_s
 
     clear.tap do
       memento.to_h.each do |host, ip|
@@ -57,8 +58,6 @@ class Kamaze::DockerHosts::Network < Hash
 
         self[host] = ip
       end
-
-      @extension = extension
     end
   end
 
