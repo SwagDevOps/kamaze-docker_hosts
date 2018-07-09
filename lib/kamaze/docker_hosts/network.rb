@@ -49,9 +49,11 @@ class Kamaze::DockerHosts::Network < Hash
   #
   # @return [self]
   def extension=(extension)
+    extension = extension.to_s.empty? ? nil : extension.to_s
+
     clear.tap do
       memento.to_h.each do |host, ip|
-        host = "#{host}.#{extension}" unless host.to_s.empty?
+        host = "#{host}.#{extension}" if extension
 
         self[host] = ip
       end
