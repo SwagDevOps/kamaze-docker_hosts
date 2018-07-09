@@ -10,9 +10,11 @@ class Kamaze::DockerHosts::Cli
     extend Hanami::CLI::Registry
 
     autoload :Network, "#{__dir__}/commands/network"
+    autoload :Hosts, "#{__dir__}/commands/hosts"
     autoload :Version, "#{__dir__}/commands/version"
 
     register('network', Network)
+    register('hosts', Hosts)
     register('version', Version, aliases: ['--version'])
   end
 end
