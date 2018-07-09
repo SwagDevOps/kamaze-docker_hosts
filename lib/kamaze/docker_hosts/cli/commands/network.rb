@@ -1,21 +1,16 @@
 # frozen_string_literal: true
 
 require_relative '../commands'
-require 'terminal-table'
 
 class Kamaze::DockerHosts::Cli
   # Display network status
   class Commands::Network < Command
     enable_network
     desc 'Display network status'
-    # rubocop:disable Style/BracesAroundHashParameters
     option :raw, \
-           {
-             desc: 'Display raw values',
-             type: :boolean,
-             default: !tty?(:stdout)
-           }
-    # rubocop:enable Style/BracesAroundHashParameters
+           desc: 'Display raw values',
+           type: :boolean,
+           default: !tty?(:stdout)
 
     def call(**options)
       halt(:ENETDOWN, 'Network unavailable.') unless network.available?
@@ -39,6 +34,8 @@ class Kamaze::DockerHosts::Cli
 
     def render(network, raw = false) # rubocop:disable Metrics/MethodLength
       return if network.empty?
+
+      require 'terminal-table'
 
       Terminal::Table.new do |table|
         table.rows = prepare(network)
