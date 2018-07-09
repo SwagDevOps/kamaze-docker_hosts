@@ -28,9 +28,9 @@ Gem::Specification.new do |s|
   ].map { |m| Dir.glob(m) }.flatten.sort
 
   s.add_runtime_dependency("docker-api", ["~> 1.34"])
-  s.add_runtime_dependency("hanami-cli", ["~> 0.2"])
   s.add_runtime_dependency("hosts", ["~> 0.1"])
   s.add_runtime_dependency("kamaze-version", ["~> 1.0"])
+  s.add_runtime_dependency("hanami-cli", ["~> 0.2"])
   s.add_runtime_dependency("sys-proc", [">= 1.1.2", "~> 1.1"])
   s.add_runtime_dependency("terminal-table", ["~> 1.8"])
 end
