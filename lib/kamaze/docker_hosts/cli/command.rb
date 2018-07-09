@@ -6,13 +6,16 @@ require 'hanami/cli'
 # @abstract
 class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
   autoload :InterruptError, "#{__dir__}/command/interrupt_error"
+  require_relative 'config'
+  require_relative '../network'
 
   class << self
     protected
 
+    # Enable network.
+    #
+    # @see #network()
     def enable_network
-      require_relative '../network'
-
       Kamaze::DockerHosts::Network.new.tap do |network|
         @network = network
 
@@ -21,6 +24,15 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
         self.singleton_class.class_eval { protected :network }
         # rubocop:enable Style/AccessModifierDeclarations
       end
+    end
+
+    # Set config option.
+    #
+    # @see #configure()
+    def configurable
+      option :config, \
+             desc: 'Configuration directory',
+             default: Kamaze::DockerHosts::Cli::Config.roots.last.to_s
     end
 
     # Denote current outputs are ``tty``.
@@ -43,6 +55,39 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
     end
   end
 
+  # Configure (from given options).
+  #
+  # Sample of use:
+  #
+  # ```ruby
+  # class Hello < Command
+  #   configurable
+  #
+  #   def call(**options)
+  #     configure(options)
+  #
+  #     # access to config
+  #     bar = config.foo.bar
+  #   end
+  # end
+  # ```
+  #
+  # @param [Hash] options
+  # @raise [KeyError]
+  # @return [self]
+  def configure(options)
+    Kamaze::DockerHosts::Cli::Config.build do |c|
+      c.add_root(options.fetch(:config))
+    end.tap do |config|
+      self.singleton_class.define_method(:_config) { config }
+      # rubocop:disable Style/AccessModifierDeclarations
+      self.singleton_class.class_eval { protected :_config }
+      # rubocop:enable Style/AccessModifierDeclarations
+    end
+
+    self
+  end
+
   protected
 
   # Interrupt command execution.
@@ -58,6 +103,15 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
     end
   end
 
+  # @see #configure
+  # @return [Kamaze::DockerHosts::Cli::Config|nil]
+  def config
+    self._config.clone
+  rescue NoMethodError
+    nil
+  end
+
+  # @todo configure network from ``config``.
   # @return [Kamaze::DockerHosts::Network|nil]
   def network
     self.class.__send__(:network).clone
