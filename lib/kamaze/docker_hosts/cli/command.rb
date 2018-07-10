@@ -2,8 +2,8 @@
 
 require 'hanami/cli'
 require_relative '../cli'
-require_relative '../config'
 require_relative '../network'
+require_relative '../configurator'
 
 # @abstract
 class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
@@ -14,6 +14,8 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
 
     # Enable network.
     #
+    # Implies ``configurable``.
+    #
     # @see #network()
     def enable_network
       # rubocop:disable Style/AccessModifierDeclarations
@@ -23,6 +25,8 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
         protected :network
       end
       # rubocop:enable Style/AccessModifierDeclarations
+
+      configurable
     end
 
     # Set config option.
@@ -30,8 +34,9 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
     # @see #configure()
     def configurable
       option :config, \
-             desc: 'Configuration directory',
-             default: Kamaze::DockerHosts::Config.roots.last.to_s
+             desc: 'Configuration',
+             aliases: ['-c'],
+             default: Kamaze::DockerHosts::Configurator.roots.fetch(0)
     end
 
     # Denote current outputs are ``tty``.
@@ -75,14 +80,12 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
   # @raise [KeyError]
   # @return [self]
   def configure(options)
-    Kamaze::DockerHosts::Config.build do |c|
-      c.add_root(options.fetch(:config))
-    end.tap do |config|
-      self.singleton_class.define_method(:_config) { config }
-      # rubocop:disable Style/AccessModifierDeclarations
-      self.singleton_class.class_eval { protected :_config }
-      # rubocop:enable Style/AccessModifierDeclarations
-    end
+    config = configurators[:config].call(options.fetch(:config))
+
+    self.singleton_class.define_method(:_config) { config }
+    # rubocop:disable Style/AccessModifierDeclarations
+    self.singleton_class.class_eval { protected :_config }
+    # rubocop:enable Style/AccessModifierDeclarations
 
     self
   end
@@ -117,44 +120,34 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
   rescue NoMethodError
     return
   else
+    # rubocop:disable Lint/ShadowingOuterLocalVariable
     # store network
-    network || self.class.__send__('network=', network_setup)
-  end
-
-  # @return [self]
-  #
-  # @see https://github.com/swipely/docker-api#host
-  # @see https://github.com/swipely/docker-api#ssl
-  def configure_docker
-    require 'docker'
-    return unless config
-
-    config.docker.tap do |config|
-      [:options, :url].each do |method|
-        config.public_send(method).tap do |val|
-          Docker.public_send("#{method}=", val) if val
-        end
-      end
+    network || configurators[:network].call(config).tap do |network|
+      self.class.__send__('network=', network)
     end
-
-    self
-  end
-
-  # @return [Kamaze::DockerHosts::Network]
-  def network_setup
-    configure_docker
-    Kamaze::DockerHosts::Network.new.tap do |network|
-      if config
-        # apply network config
-        config.network.extension.tap do |extension|
-          network.extension = extension unless extension.to_s.empty?
-        end
-      end
-    end
+    # rubocop:enable Lint/ShadowingOuterLocalVariable
   end
 
   # @return [Boolean]
   def tty?(*args)
     self.class.__send__(:tty?, args)
+  end
+
+  private
+
+  # Get configurators.
+  #
+  # @return [Hash{Symbol => Proc}]
+  def configurators
+    {
+      # @type [Kamaze::DockerHosts::Config]
+      config: lambda do |config|
+        Kamaze::DockerHosts::Configurator.new(config).config
+      end,
+      # @type [Kamaze::DockerHosts::Network]
+      network: lambda do |config|
+        Kamaze::DockerHosts::Network.configure(config)
+      end
+    }
   end
 end

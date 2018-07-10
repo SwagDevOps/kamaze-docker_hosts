@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../docker_hosts'
+require_relative '../configurator'
 require 'figgy'
 
 # Provide access to configuration files.
@@ -17,8 +17,15 @@ require 'figgy'
 # ```
 #
 # @see https://github.com/pd/figgy
-class Kamaze::DockerHosts::Config < Figgy
+class Kamaze::DockerHosts::Configurator::Config < Figgy
   autoload :Pathname, 'pathname'
+
+  # Get a Hash representation.
+  #
+  # @return [Hash]
+  def to_h
+    @store.keys.sort.map { |k| [k, self.public_send(k)] }.to_h
+  end
 
   class << self
     # @yield [Figgy::Configuration] an object to set things up with
@@ -27,7 +34,8 @@ class Kamaze::DockerHosts::Config < Figgy
       config = Figgy::Configuration.new.tap do |c|
         c.preload = true
         c.root = roots.fetch(0)
-        roots[1..-1].each { |path| c.add_root(roots.fetch(1)) }
+        roots[1..-1].each { |path| c.add_root(path) }
+        c.define_overlay :default, nil
       end
 
       yield(config) if block_given?
@@ -46,8 +54,8 @@ class Kamaze::DockerHosts::Config < Figgy
     # @return [Array<Pathname>]
     def roots
       [
-        Pathname.new(__dir__).join('config'),
         Pathname.new('/etc').join(progname),
+        Pathname.new(__dir__).join('../configs').realpath,
       ]
     end
   end

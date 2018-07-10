@@ -19,10 +19,21 @@ require_relative '../docker_hosts'
 # }
 # ```
 class Kamaze::DockerHosts::Network < Hash
-  autoload :Docker, 'docker-api'
+  autoload :Docker, 'docker'
   autoload :IPAddr, 'ipaddr'
   # @see https://github.com/excon/excon
   autoload :Excon, 'excon'
+  autoload :Configurator, "#{__dir__}/network/configurator"
+
+  class << self
+    # Configure a network from given config.
+    #
+    # @param [Kamaze::DockerHosts::Config|String|Pathname] config
+    # @return [self]
+    def configure(config)
+      Configurator.new(config).network
+    end
+  end
 
   # Get extension used on hosts.
   #
