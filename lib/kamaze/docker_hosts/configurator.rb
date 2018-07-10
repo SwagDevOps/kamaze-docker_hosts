@@ -6,7 +6,6 @@ require_relative '../docker_hosts'
 #
 # @see Kamaze::DockerHosts::Config
 class Kamaze::DockerHosts::Configurator
-  autoload :Pathname, 'pathname'
   autoload :Config, "#{__dir__}/configurator/config"
 
   # @return [Kamaze::DockerHosts::Config]
@@ -22,17 +21,24 @@ class Kamaze::DockerHosts::Configurator
 
       @config = klass.build do |c|
         c.root = config.to_s
-        klass.roots.each { |path| c.add_root(path) }
+        c.add_root(klass.root)
       end
     end
   end
 
-  # Get default root paths.
-  #
-  # @return [Array<Pathname>]
   class << self
-    def roots
-      Config.roots
+    # Get default root path.
+    #
+    # @return [Pathname]
+    def root
+      Config.root
+    end
+
+    # Get system config path.
+    #
+    # @return [Pathname]
+    def sysconf
+      Config.sysconf
     end
   end
 end

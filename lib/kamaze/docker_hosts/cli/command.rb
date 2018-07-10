@@ -18,6 +18,7 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
     #
     # @see #network()
     def enable_network
+      configurable
       # rubocop:disable Style/AccessModifierDeclarations
       self.singleton_class.class_eval do
         attr_accessor :network
@@ -25,8 +26,6 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
         protected :network
       end
       # rubocop:enable Style/AccessModifierDeclarations
-
-      configurable
     end
 
     # Set config option.
@@ -36,7 +35,7 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
       option :config, \
              desc: 'Configuration',
              aliases: ['-c'],
-             default: Kamaze::DockerHosts::Configurator.roots.fetch(0)
+             default: Kamaze::DockerHosts::Configurator.sysconf.to_s
     end
 
     # Denote current outputs are ``tty``.
