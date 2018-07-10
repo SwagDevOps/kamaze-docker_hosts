@@ -5,6 +5,7 @@ require_relative '../commands'
 class Kamaze::DockerHosts::Cli
   # Display network status
   class Commands::Network < Command
+    register 'network'
     enable_network
     desc 'Display network status'
     option :raw, \
