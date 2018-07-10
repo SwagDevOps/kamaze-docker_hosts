@@ -12,6 +12,16 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
   class << self
     protected
 
+    # Register command.
+    #
+    # @param [String] name
+    # @param [Hash] options
+    def register(name, options = {})
+      registry = Kamaze::DockerHosts::Cli::Commands
+
+      registry.register(name, self, **options)
+    end
+
     # Enable network.
     #
     # Implies ``configurable``.
