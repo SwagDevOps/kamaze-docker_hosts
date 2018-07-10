@@ -9,12 +9,21 @@ class Kamaze::DockerHosts::Cli
   module Commands
     extend Hanami::CLI::Registry
 
-    autoload :Network, "#{__dir__}/commands/network"
-    autoload :Hosts, "#{__dir__}/commands/hosts"
-    autoload :Version, "#{__dir__}/commands/version"
+    class << self
+      protected
 
-    register('network', Network)
-    register('hosts', Hosts)
-    register('version', Version, aliases: ['--version'])
+      # Get registrable command files.
+      #
+      # @return [Array<String>]
+      def registrables
+        Dir.chdir(__dir__) { Dir.glob('commands/*.rb') }
+           .sort
+           .map { fp.gsub(/\.rb$/, '') }
+      end
+    end
+
+    registrables.each do |command|
+      require_relative command
+    end
   end
 end
