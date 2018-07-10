@@ -13,6 +13,8 @@ class Kamaze::DockerHosts::Cli
            default: !tty?(:stdout)
 
     def call(**options)
+      configure(options)
+
       halt(:ENETDOWN, 'Network unavailable.') unless network.available?
       halt(:NOERROR) if network.empty?
 
