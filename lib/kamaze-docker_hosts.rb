@@ -8,13 +8,15 @@
 
 $LOAD_PATH.unshift(__dir__)
 
-lock = Dir.chdir("#{__dir__}/..") do
-  [['gems.rb', 'gems.locked'], ['Gemfile', 'Gemfile.lock']]
-    .map { |m| Dir.glob(m).size >= 2 }
-    .include?(true)
+self.singleton_class.define_method(:locked?) do
+  Dir.chdir("#{__dir__}/..") do
+    [['gems.rb', 'gems.locked'], ['Gemfile', 'Gemfile.lock']]
+      .map { |m| 2 == Dir.glob(m).size }
+      .include?(true)
+  end
 end
 
-if lock
+if locked?
   require 'rubygems'
   require 'bundler/setup'
 
