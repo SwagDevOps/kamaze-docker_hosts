@@ -8,26 +8,31 @@ class Kamaze::DockerHosts::Cli
     register 'hosts'
     enable_network
     desc 'Display hosts'
+    option :input, \
+           desc: 'File read',
+           aliases: ['-i'],
+           default: '/etc/hosts'
 
     include Kamaze::DockerHosts::Cli::Rouge
 
     def call(**options)
       configure(options)
 
-      file.update!(network).tap do |content|
+      read(options.fetch(:input)).update!(network).tap do |content|
         output = tty?(:stdout) ? hl(content, :Conf) : content
+        method = tty?(:stdout) ? :write : :puts
 
-        $stdout.puts(output)
+        $stdout.public_send(method, output)
       end
     end
 
     protected
 
-    # Get file.
+    # Read file.
     #
     # @return [Kamaze::DockerHosts::File]
-    def file
-      Kamaze::DockerHosts::File.new
+    def read(file)
+      Kamaze::DockerHosts::File.new(file)
     end
   end
 end
