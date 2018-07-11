@@ -9,11 +9,15 @@ class Kamaze::DockerHosts::Cli
     enable_network
     desc 'Display hosts'
 
+    include Kamaze::DockerHosts::Cli::Rouge
+
     def call(**options)
       configure(options)
 
       file.update!(network).tap do |content|
-        $stdout.puts(content)
+        output = tty?(:stdout) ? hl(content, :Conf) : content
+
+        $stdout.puts(output)
       end
     end
 
@@ -23,8 +27,6 @@ class Kamaze::DockerHosts::Cli
     #
     # @return [Kamaze::DockerHosts::File]
     def file
-      require_relative '../../file'
-
       Kamaze::DockerHosts::File.new
     end
   end
