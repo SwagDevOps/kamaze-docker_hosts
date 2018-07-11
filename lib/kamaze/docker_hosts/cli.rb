@@ -13,6 +13,7 @@ require 'hanami/cli'
 class Kamaze::DockerHosts::Cli < Hanami::CLI
   autoload :Commands, "#{__dir__}/cli/commands"
   autoload :Command, "#{__dir__}/cli/command"
+  autoload :Rouge, "#{__dir__}/cli/rouge"
 
   # Create a new instance
   def initialize
