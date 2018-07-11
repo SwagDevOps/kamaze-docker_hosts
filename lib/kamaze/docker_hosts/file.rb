@@ -60,6 +60,11 @@ class Kamaze::DockerHosts::File < Kamaze::DockerHosts::BaseFile
     end
   end
 
+  # @return [String]
+  def to_s
+    "#{super.strip}\n"
+  end
+
   protected
 
   # @type [Hash]
