@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../commands'
+autoload 'JSON', 'json'
 
 class Kamaze::DockerHosts::Cli
   # Display network status
@@ -41,7 +42,9 @@ class Kamaze::DockerHosts::Cli
     # @param [Hash|Kamaze::DockerHosts::Network] network
     # @return [String]
     def render_json(network)
-      tty?(:stdout) ? hl(network.to_json, :JSON) : network.to_json
+      JSON.pretty_generate(network).tap do |json|
+        return tty?(:stdout) ? hl(json, :JSON) : json
+      end
     end
   end
 end
