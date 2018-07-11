@@ -45,7 +45,7 @@ class Kamaze::DockerHosts::Network < Hash
   end
 
   # @return [String]
-  def to_s # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+  def to_s
     maxl = self.keys.map(&:size).max.freeze
     self.to_a.map do |row|
       [
@@ -55,9 +55,7 @@ class Kamaze::DockerHosts::Network < Hash
         },
         row[1]
       ]
-    end.map do |row|
-      row[0] + row[1].map(&:to_s).join("\s")
-    end.join("\n")
+    end.map { |row| row[0] + row[1].join("\s") }.join("\n")
   end
 
   # Denote network is available.
