@@ -18,7 +18,7 @@ class Kamaze::DockerHosts::Cli
       def registrables
         Dir.chdir(__dir__) { Dir.glob('commands/*.rb') }
            .sort
-           .map { fp.gsub(/\.rb$/, '') }
+           .map { |fp| fp.gsub(/\.rb$/, '') }
       end
     end
 
