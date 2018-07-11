@@ -7,6 +7,10 @@
 # There is NO WARRANTY, to the extent permitted by law.
 
 require_relative '../docker_hosts'
+autoload :Docker, 'docker'
+autoload :IPAddr, 'ipaddr'
+# @see https://github.com/excon/excon
+autoload :Excon, 'excon'
 
 # Describe current network as a Hash.
 #
@@ -19,10 +23,6 @@ require_relative '../docker_hosts'
 # }
 # ```
 class Kamaze::DockerHosts::Network < Hash
-  autoload :Docker, 'docker'
-  autoload :IPAddr, 'ipaddr'
-  # @see https://github.com/excon/excon
-  autoload :Excon, 'excon'
   autoload :Configurator, "#{__dir__}/network/configurator"
 
   class << self
@@ -42,6 +42,22 @@ class Kamaze::DockerHosts::Network < Hash
 
   def initialize
     reload!
+  end
+
+  # @return [String]
+  def to_s # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    maxl = self.keys.map(&:size).max.freeze
+    self.to_a.map do |row|
+      [
+        "%<host>s%<padding>s\t" % {
+          host: row[0],
+          padding: "\s" * (maxl - row[0].size)
+        },
+        row[1]
+      ]
+    end.map do |row|
+      row[0] + row[1].map(&:to_s).join("\s")
+    end.join("\n")
   end
 
   # Denote network is available.
@@ -77,7 +93,7 @@ class Kamaze::DockerHosts::Network < Hash
   # @return [self]
   def reload!
     begin
-      @memento = self.class.hosts
+      @memento = self.class.hosts.sort.to_h
     rescue Excon::Error::Socket
       @memento = nil
     end
