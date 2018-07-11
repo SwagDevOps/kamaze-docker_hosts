@@ -34,7 +34,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency("hanami-cli", ["~> 0.2"])
   s.add_runtime_dependency("rouge", ["~> 3.1"])
   s.add_runtime_dependency("sys-proc", [">= 1.1.2", "~> 1.1"])
-  s.add_runtime_dependency("terminal-table", ["~> 1.8"])
 end
 
 # Local Variables:
