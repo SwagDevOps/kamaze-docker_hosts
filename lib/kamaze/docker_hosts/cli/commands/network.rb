@@ -8,10 +8,12 @@ class Kamaze::DockerHosts::Cli
     register 'network'
     enable_network
     desc 'Display network status'
-    option :raw, \
-           desc: 'Display raw values',
-           type: :boolean,
-           default: !tty?(:stdout)
+    option :format, \
+           desc: 'Format',
+           values: %w[json text],
+           default: :json
+
+    include Kamaze::DockerHosts::Cli::Rouge
 
     def call(**options)
       configure(options)
@@ -19,37 +21,29 @@ class Kamaze::DockerHosts::Cli
       halt(:ENETDOWN, 'Network unavailable.') unless network.available?
       halt(:NOERROR) if network.empty?
 
-      $stdout.puts(render(network, options.fetch(:raw)))
+      options.fetch(:format).tap do |type|
+        $stdout.puts self.__send__("render_#{type}", network)
+      end
     end
 
     protected
 
-    # Prepare network rendering.
+    # Render given network as text.
     #
-    # @param [Kamaze::DockerHosts::Network] network
-    # @return [Array]
-    def prepare(network)
-      network = network.to_a.map(&:flatten)
-      max = network.map(&:size).max
-
-      network.map { |row| row.push(*([nil] * (max - row.size))) }
+    # @param [Hash|Kamaze::DockerHosts::Network] network
+    # @return [String]
+    def render_text(network)
+      network.to_s
     end
 
-    def render(network, raw = false) # rubocop:disable Metrics/MethodLength
-      return if network.empty?
+    # Render given network as json.
+    #
+    # @param [Hash|Kamaze::DockerHosts::Network] network
+    # @return [String]
+    def render_json(network)
+      json = JSON.pretty_generate(network)
 
-      require 'terminal-table'
-
-      Terminal::Table.new do |table|
-        table.rows = prepare(network)
-        table.style = {
-          border_top: false,
-          border_bottom: false,
-          border_y: '',
-          padding_left: 0,
-          padding_right: 4,
-        }.public_send(raw ? :to_h : :clear)
-      end
+      tty?(:stdout) ? hl(json, :JSON) : json
     end
   end
 end
