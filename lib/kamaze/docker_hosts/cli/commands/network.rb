@@ -21,8 +21,8 @@ class Kamaze::DockerHosts::Cli
       halt(:ENETDOWN, 'Network unavailable.') unless network.available?
       halt(:NOERROR) if network.empty?
 
-      options.fetch(:format).tap do |type|
-        $stdout.puts self.__send__("render_#{type}", network)
+      options.fetch(:format).tap do |fmt|
+        $stdout.puts self.__send__("render_#{fmt}", network)
       end
     end
 
@@ -41,9 +41,7 @@ class Kamaze::DockerHosts::Cli
     # @param [Hash|Kamaze::DockerHosts::Network] network
     # @return [String]
     def render_json(network)
-      json = JSON.pretty_generate(network)
-
-      tty?(:stdout) ? hl(json, :JSON) : json
+      tty?(:stdout) ? hl(network.to_json, :JSON) : network.to_json
     end
   end
 end
