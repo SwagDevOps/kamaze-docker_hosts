@@ -52,16 +52,18 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
     #
     # Possible values are: ``[both, stdout, stderr]``.
     #
+    # @param [Symbol|String] out
     # @raise [ArgumentError]
     # @return [Boolean]
-    def tty?(where = nil)
+    def tty?(out = :both)
+      out = out.to_sym
       res = {
         stderr: ($stderr.respond_to?(:tty?) and $stderr.tty?),
         stdout: ($stdout.respond_to?(:tty?) and $stdout.tty?),
       }.tap { |hsh| hsh.merge!(both: (hsh[:stdout] and hsh[:stderr])) }
 
       begin
-        res.fetch((where || :both).to_sym)
+        res.fetch(out)
       rescue KeyError
         raise ArgumentError, "#{where} not in #{res.keys.reverse}"
       end
@@ -139,7 +141,7 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
 
   # @return [Boolean]
   def tty?(*args)
-    self.class.__send__(:tty?, args)
+    self.class.__send__(:tty?, *args)
   end
 
   private
