@@ -14,6 +14,7 @@ group :default do
   group :cli do
     gem 'figgy', '~> 1.3'
     gem 'hanami-cli', '~> 0.2'
+    gem 'rouge', '~> 3.1'
     gem 'sys-proc', '~> 1.1', '>= 1.1.2'
     gem 'terminal-table', '~> 1.8'
   end
