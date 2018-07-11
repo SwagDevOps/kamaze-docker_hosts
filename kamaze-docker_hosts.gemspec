@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency("docker-api", ["~> 1.34"])
   s.add_runtime_dependency("hosts", ["~> 0.1"])
+  s.add_runtime_dependency("json", ["~> 2.0"])
   s.add_runtime_dependency("kamaze-version", ["~> 1.0"])
   s.add_runtime_dependency("figgy", ["~> 1.3"])
   s.add_runtime_dependency("hanami-cli", ["~> 0.2"])

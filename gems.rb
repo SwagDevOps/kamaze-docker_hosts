@@ -8,6 +8,7 @@ group :default do
   group :core do
     gem 'docker-api', '~> 1.34'
     gem 'hosts', '~> 0.1'
+    gem 'json', '~> 2.0'
     gem 'kamaze-version', '~> 1.0'
   end
 
