@@ -45,6 +45,13 @@ class Kamaze::DockerHosts::Network < Hash
   end
 
   # @return [String]
+  def to_json
+    autoload :JSON, 'json'
+
+    JSON.public_send(empty? ? :generate : :pretty_generate, self.to_h)
+  end
+
+  # @return [String]
   def to_s
     maxl = self.keys.map(&:size).max.freeze
     self.to_a.map do |row|
