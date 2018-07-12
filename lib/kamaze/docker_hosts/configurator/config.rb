@@ -2,6 +2,7 @@
 
 require_relative '../configurator'
 require 'figgy'
+autoload :Pathname, 'pathname'
 
 # Provide access to configuration files.
 #
@@ -18,8 +19,6 @@ require 'figgy'
 #
 # @see https://github.com/pd/figgy
 class Kamaze::DockerHosts::Configurator::Config < Figgy
-  autoload :Pathname, 'pathname'
-
   # Get a Hash representation.
   #
   # @return [Hash]
