@@ -8,10 +8,10 @@ require_relative '../docker_hosts'
 class Kamaze::DockerHosts::Configurator
   autoload :Config, "#{__dir__}/configurator/config"
 
-  # @return [Kamaze::DockerHosts::Config]
+  # @return [Configurator::Config]
   attr_reader :config
 
-  # @param [Kamaze::DockerHosts::Config|String|Pathname] config
+  # @param [Configurator::Config|String|Pathname] config
   def initialize(config)
     Config.tap do |klass|
       if config.is_a?(klass)
