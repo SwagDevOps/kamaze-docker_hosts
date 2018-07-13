@@ -8,12 +8,12 @@
 
 require_relative '../docker_hosts'
 require 'hosts'
+autoload :Digest, 'digest'
+autoload :Pathname, 'pathname'
 
 # @abstract
 # @see https://github.com/aef/hosts
 class Kamaze::DockerHosts::BaseFile < Aef::Hosts::File
-  autoload :Pathname, 'pathname'
-
   # Initializes a file.
   #
   # @param [String|Pathname|nil] path path to the hosts file
@@ -21,6 +21,24 @@ class Kamaze::DockerHosts::BaseFile < Aef::Hosts::File
     reset
     self.path = path
     autoread
+  end
+
+  # @param [Hash] options
+  #
+  # @return [String]
+  def to_s(options = {})
+    "#{super.strip}\n"
+  end
+
+  # Compute an hexdigest.
+  #
+  # @param [Symbol] algorithm
+  def hexdigest(from_file = false, algorithm = :MD5)
+    klass = Digest.const_get(algorithm)
+
+    return klass.hexdigest(to_s) unless from_file
+    return nil if path.nil? or !(path.file? and path.readable?)
+    klass.file(path).hexdigest
   end
 
   class << self
