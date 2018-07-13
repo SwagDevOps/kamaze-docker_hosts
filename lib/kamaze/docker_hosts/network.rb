@@ -31,7 +31,7 @@ class Kamaze::DockerHosts::Network < Hash
     # @param [Kamaze::DockerHosts::Config|String|Pathname] config
     # @return [self]
     def configure(config)
-      Configurator.new(config).network
+      Configurator.new(config).call
     end
   end
 
@@ -103,6 +103,8 @@ class Kamaze::DockerHosts::Network < Hash
   #
   # @return [self]
   def reset
+    clear
+
     self.tap do
       @extension = nil
 

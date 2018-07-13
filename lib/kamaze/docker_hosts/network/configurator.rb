@@ -10,17 +10,9 @@ module Kamaze::DockerHosts
   class Network::Configurator < Configurator
     autoload :Docker, 'docker'
 
-    # Get configured network.
-    #
     # @return [Kamaze::DockerHosts::Network]
-    attr_reader :network
-
-    # Configure a network from given config.
-    #
-    # @param [Kamaze::DockerHosts::Config|String|Pathname] config
-    def initialize(config)
-      super
-      @network = network_setup
+    def call
+      @network ||= network_setup
     end
 
     protected

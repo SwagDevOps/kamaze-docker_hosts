@@ -8,9 +8,6 @@ require_relative '../docker_hosts'
 class Kamaze::DockerHosts::Configurator
   autoload :Config, "#{__dir__}/configurator/config"
 
-  # @return [Configurator::Config]
-  attr_reader :config
-
   # @param [Configurator::Config|String|Pathname] config
   def initialize(config)
     Config.tap do |klass|
@@ -24,6 +21,15 @@ class Kamaze::DockerHosts::Configurator
         c.add_root(klass.root)
       end
     end
+  end
+
+  # Get configured instance.
+  #
+  # Inherited class should configure and return target.
+  #
+  # @return [Configurator::Config]
+  def call
+    config
   end
 
   class << self
@@ -41,4 +47,9 @@ class Kamaze::DockerHosts::Configurator
       Config.sysconf
     end
   end
+
+  protected
+
+  # @return [Configurator::Config]
+  attr_reader :config
 end

@@ -153,7 +153,7 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
     {
       # @type [Kamaze::DockerHosts::Config]
       config: lambda do |config|
-        Kamaze::DockerHosts::Configurator.new(config).config
+        Kamaze::DockerHosts::Configurator.new(config).call
       end,
       # @type [Kamaze::DockerHosts::Network]
       network: lambda do |config|
