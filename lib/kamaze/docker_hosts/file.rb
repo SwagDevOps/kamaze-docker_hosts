@@ -41,6 +41,7 @@ class Kamaze::DockerHosts::File < Kamaze::DockerHosts::BaseFile
   end
 
   def update!(*args)
+    invalidate_cache!
     self.elements = self.update(*args).elements
 
     self
@@ -58,11 +59,6 @@ class Kamaze::DockerHosts::File < Kamaze::DockerHosts::BaseFile
     update_on(self.class.new(*[path].compact)).tap do
       self.updating = nil
     end
-  end
-
-  # @return [String]
-  def to_s
-    "#{super.strip}\n"
   end
 
   protected
