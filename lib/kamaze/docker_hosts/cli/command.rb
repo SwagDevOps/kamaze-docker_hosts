@@ -48,6 +48,17 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
              default: Kamaze::DockerHosts::Configurator.sysconf.to_s
     end
 
+    # Get default config.
+    #
+    # @return [Kamaze::DockerHosts::Configurator::Config]
+    def config
+      Kamaze::DockerHosts::Configurator.tap do |c|
+        config = c.sysconf.to_s
+
+        return c.new(config).call
+      end
+    end
+
     # Denote current outputs are ``tty``.
     #
     # Possible values are: ``[both, stdout, stderr]``.
