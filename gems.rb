@@ -8,13 +8,13 @@ group :default do
   group :core do
     gem 'docker-api', '~> 1.34'
     gem 'hosts', '~> 0.1'
-    gem 'json', '~> 2.0'
     gem 'kamaze-version', '~> 1.0'
   end
 
   group :cli do
     gem 'figgy', '~> 1.3'
     gem 'hanami-cli', '~> 0.2'
+    gem 'json', '~> 2.0'
     gem 'rouge', '~> 3.1'
     gem 'sys-proc', '~> 1.1', '>= 1.1.2'
   end
