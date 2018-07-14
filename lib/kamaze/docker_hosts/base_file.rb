@@ -30,6 +30,11 @@ class Kamaze::DockerHosts::BaseFile < Aef::Hosts::File
     "#{super.strip}\n"
   end
 
+  # @return [String|nil]
+  def to_path
+    path.nil? ? nil : path.to_path
+  end
+
   # Compute an hexdigest.
   #
   # @param [Symbol] algorithm
