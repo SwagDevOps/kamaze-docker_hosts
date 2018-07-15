@@ -18,7 +18,7 @@ class Kamaze::DockerHosts::Configurator
 
       @config = klass.build do |c|
         c.root = config.to_s
-        c.add_root(klass.root)
+        c.add_root(klass.libconfdir)
       end
     end
   end
@@ -33,18 +33,18 @@ class Kamaze::DockerHosts::Configurator
   end
 
   class << self
-    # Get default root path.
+    # Get lib config path.
     #
     # @return [Pathname]
-    def root
-      Config.root
+    def libconfdir
+      Config.libconfdir
     end
 
     # Get system config path.
     #
     # @return [Pathname]
-    def sysconf
-      Config.sysconf
+    def sysconfdir
+      Config.sysconfdir
     end
   end
 

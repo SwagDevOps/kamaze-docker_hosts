@@ -32,8 +32,8 @@ class Kamaze::DockerHosts::Configurator::Config < Figgy
     def build
       config = Figgy::Configuration.new.tap do |c|
         c.preload = true
-        c.root = sysconf
-        c.add_root(root)
+        c.root = sysconfdir
+        c.add_root(libconfdir)
         c.define_overlay :default, nil
       end
 
@@ -48,17 +48,17 @@ class Kamaze::DockerHosts::Configurator::Config < Figgy
       $PROGRAM_NAME
     end
 
-    # Get system config path.
+    # Get system config dir.
     #
     # @return [Pathname]
-    def sysconf
+    def sysconfdir
       Pathname.new('/etc').join(progname)
     end
 
-    # Get root dir.
+    # Get lib config dir.
     #
     # @return [Pathname]
-    def root
+    def libconfdir
       Pathname.new(__dir__).join('../configs').realpath
     end
   end
