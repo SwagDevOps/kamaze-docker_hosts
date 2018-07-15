@@ -45,7 +45,7 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
       option :config, \
              desc: 'Configuration',
              aliases: ['-c'],
-             default: Kamaze::DockerHosts::Configurator.sysconf.to_s
+             default: Kamaze::DockerHosts::Configurator.sysconfdir.to_s
     end
 
     # Get default config.
@@ -53,7 +53,7 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
     # @return [Kamaze::DockerHosts::Configurator::Config]
     def config
       Kamaze::DockerHosts::Configurator.tap do |c|
-        config = c.sysconf.to_s
+        config = c.sysconfdir.to_s
 
         return c.new(config).call
       end
