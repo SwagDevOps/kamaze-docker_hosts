@@ -14,6 +14,7 @@ class Kamaze::DockerHosts::Cli < Hanami::CLI
   autoload :Commands, "#{__dir__}/cli/commands"
   autoload :Command, "#{__dir__}/cli/command"
   autoload :Rouge, "#{__dir__}/cli/rouge"
+  autoload :Watcher, "#{__dir__}/cli/watcher"
 
   # Create a new instance
   def initialize
