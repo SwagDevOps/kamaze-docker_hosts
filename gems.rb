@@ -12,6 +12,7 @@ group :default do
   end
 
   group :cli do
+    gem 'cod', '~> 0.6'
     gem 'figgy', '~> 1.3'
     gem 'hanami-cli', '~> 0.2'
     gem 'json', '~> 2.0'
