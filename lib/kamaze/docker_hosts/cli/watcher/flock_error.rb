@@ -8,6 +8,8 @@
 
 require_relative '../watcher'
 
-# Provides methods related to logging.
-class Kamaze::DockerHosts::Cli::Watcher::FlockError < IOError
+class Kamaze::DockerHosts::Cli::Watcher
+  # Error raised on ``flock`` failure.
+  class FlockError < IOError
+  end
 end

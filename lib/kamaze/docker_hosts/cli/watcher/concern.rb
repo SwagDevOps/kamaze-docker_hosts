@@ -8,6 +8,8 @@
 
 require_relative '../watcher'
 
-# Concern module.
-module Kamaze::DockerHosts::Cli::Watcher::Concern
+class Kamaze::DockerHosts::Cli::Watcher
+  # Concern module.
+  module Concern
+  end
 end
