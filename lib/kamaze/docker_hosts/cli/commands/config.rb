@@ -7,7 +7,7 @@
 # There is NO WARRANTY, to the extent permitted by law.
 
 require_relative '../commands'
-require 'pp'
+require 'sys/proc'
 autoload 'JSON', 'json'
 
 class Kamaze::DockerHosts::Cli
@@ -26,6 +26,17 @@ class Kamaze::DockerHosts::Cli
         output = tty?(:stdout) ? hl(json, :JSON) : json
 
         $stdout.puts(output)
+      end
+    end
+
+    protected
+
+    # @see Kamaze::DockerHosts::Cli::Commands::Watch
+    def config
+      super&.tap do |c|
+        c.watcher.pidfile = c.watcher.pidfile % {
+          progname: Sys::Proc.progname
+        }
       end
     end
   end
