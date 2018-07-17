@@ -1,3 +1,2 @@
 ---
-extension:
-#extension: 'local'
+extension:  # example: 'local'
