@@ -43,8 +43,8 @@ module Kamaze::DockerHosts::Cli::Watcher::Concern::Write
     end
   end
 
-  def stat(_path)
-    File.stat(target)
+  def stat(path)
+    File.stat(path)
   rescue StandardError
     nil
   end
