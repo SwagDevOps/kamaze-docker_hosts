@@ -38,6 +38,25 @@ module Kamaze::DockerHosts::Cli::Watcher::Concern::Log
     self
   end
 
+  # Log error happening during block execution.
+  #
+  # @param [Array<Class>] types
+  # @param [Boolean] pass
+  # @raise [Exception]
+  # @return [nil|Object]
+  def log_error(*types, pass: true)
+    yield
+  rescue *types => e
+    ('[%<type>s] %<message>s - %<from>s - %<btin>s' % {
+      type: e.class,
+      message: e.message,
+      from: caller_locations(2..2).first, # caller_locations[1],
+      btin: e.backtrace.first
+    }).tap { |message| log(message, :ERROR) }
+
+    pass ? nil : raise(e)
+  end
+
   # @return [Syslog::Logger]
   def syslog
     Syslog::Logger.new(Sys::Proc.progname)
