@@ -13,6 +13,8 @@ autoload :FileUtils, 'fileutils'
 
 # Provides ``write`` method, exepected to be safe.
 module Kamaze::DockerHosts::Cli::Watcher::Concern::Write
+  require_relative 'log'
+
   protected
 
   # Write file with given content.
@@ -31,22 +33,34 @@ module Kamaze::DockerHosts::Cli::Watcher::Concern::Write
   # @param [String|Pathname] target
   # @return [Integer]
   def atomic_write(content, tempfile, target)
-    utils = FileUtils
-
     Pathname.new(tempfile.path).write(content).tap do
-      stat(target)&.tap do |stat|
-        utils.chown(stat.gid, stat.uid, tempfile.path)
-        utils.chmod(stat.mode, tempfile.path)
+      log_error(Errno::ENOENT, Errno::EPERM, pass: true) do
+        apply_perms(tempfile.path, target)
       end
 
-      utils.mv(tempfile.path, target)
+      log_error(Errno::ENOENT, Errno::EPERM) do
+        FileUtils.mv(tempfile.path, target)
+      end
     end
   end
 
+  # Apply permissions (and ownership) from ``origin`` to ``target``.
+  #
+  # @param [String] origin
+  # @param [String] target
+  # @return [File::Stat]
+  def apply_perms(origin, target)
+    stat(target)&.tap do |stat|
+      FileUtils.chown(stat.gid, stat.uid, origin)
+      FileUtils.chmod(stat.mode, origin)
+    end
+  end
+
+  # @return [File::Stat]
   def stat(path)
-    File.stat(path)
-  rescue StandardError
-    nil
+    log_error(Errno::ENOENT, Errno::EPERM) do
+      File.stat(path)
+    end
   end
 
   # Prepare arguments for ``Tempfile`` initialization.
