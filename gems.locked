@@ -126,7 +126,7 @@ GEM
     unicode-display_width (1.4.0)
     unicode_utils (1.4.0)
     wisper (2.0.0)
-    yard (0.9.14)
+    yard (0.9.15)
 
 PLATFORMS
   ruby
