@@ -7,15 +7,17 @@
 # There is NO WARRANTY, to the extent permitted by law.
 
 require_relative '../cli'
+require 'sys/proc'
 autoload :Docker, 'docker'
+autoload :Tempfile, 'tempfile'
 [
   'concern/configurable',
   'concern/log',
-  'concern/write',
   'concern/signal',
   'concern/pipe',
   :configurator,
-  :flock_error
+  :flock_error,
+  :writer
 ].each { |req| require_relative "watcher/#{req}" }
 
 # Watcher.
@@ -33,7 +35,6 @@ class Kamaze::DockerHosts::Cli::Watcher
   include Concern::Configurable
   include Concern::Pipe
   include Concern::Log
-  include Concern::Write
   include Concern::Signal
 
   # @return [Kamaze::DockerHosts::Network]
@@ -67,11 +68,11 @@ class Kamaze::DockerHosts::Cli::Watcher
 
   # @param [Kamaze::DockerHosts::Network] network
   def initialize(network)
-    @network = network
-    @fork_error = nil
     yield(self) if block_given?
     setup
     attrs_lock!
+    @network = network
+    @writer = Writer.new(file.to_path, logger)
   end
 
   def watch
@@ -89,7 +90,7 @@ class Kamaze::DockerHosts::Cli::Watcher
     file.update!(network.reload!)
     return if file.hexdigest == file.hexdigest(true)
 
-    write(file.to_path, file.to_s).tap do |len|
+    writer.write(file.to_s).tap do |len|
       msg = "#{mode}: ##{network.keys.size}:#{len}(#{file.to_path.inspect})"
       msg = "#{msg}[#{options[:signal]}]" if options[:signal]
       log(msg)
@@ -115,8 +116,8 @@ class Kamaze::DockerHosts::Cli::Watcher
       suppress_output do
         begin
           lock(&block)
-        rescue Timeout::Error
-          pipe_put(:fork_error, FlockError.new("already running: #{fpid}"))
+        rescue FlockError => e
+          pipe_put(:fork_error, e)
         end
       end
     end.tap do |pid|
@@ -125,23 +126,32 @@ class Kamaze::DockerHosts::Cli::Watcher
     end
   end
 
-  protected
-
-  attr_writer :updated_at
-
   # Lock given block with ``pidfile``.
-  def lock
-    return yield(self) if block_given? and !self.pidfile
-
+  #
+  # @return [self]
+  def lock # rubocop:disable Metrics/MethodLength
     File.open(self.pidfile, File::RDWR | File::CREAT, 0o644) do |f|
-      Timeout.timeout(0.1) { f.flock(File::LOCK_EX) }
+      begin
+        Timeout.timeout(0.1) { f.flock(File::LOCK_EX) }
+      rescue Timeout::Error
+        raise FlockError, "already running: #{fpid}"
+      end
 
       f.write("#{Process.pid}\n")
       f.flush
 
-      return yield(self) if block_given?
+      yield(self) if block_given?
     end
+
+    self
   end
+
+  protected
+
+  attr_writer :updated_at
+
+  # @return [Writer]
+  attr_reader :writer
 
   def suppress_output
     streams = { $stdout => $stdout.clone, $stderr => $stderr.clone }
@@ -170,5 +180,6 @@ class Kamaze::DockerHosts::Cli::Watcher
     end
 
     @logger ||= syslog unless logger == false
+    @pidfile ||= Tempfile.new(".#{Sys::Proc.progname}")
   end
 end
