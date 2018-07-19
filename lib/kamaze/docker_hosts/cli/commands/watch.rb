@@ -8,6 +8,7 @@
 
 require_relative '../commands'
 require 'sys/proc'
+require 'yaml'
 
 class Kamaze::DockerHosts::Cli
   # Hosts watcher.
@@ -35,6 +36,10 @@ class Kamaze::DockerHosts::Cli
            type: :boolean,
            default: true,
            desc: 'Fork into background'
+    option :lock, \
+           type: :boolean,
+           default: true,
+           desc: 'Lock process'
     option :pidfile, \
            desc: 'Create pid file',
            aliases: ['-P'],
@@ -56,21 +61,29 @@ class Kamaze::DockerHosts::Cli
 
     def config
       super&.tap do |c|
-        c.watcher.pidfile = c.watcher.pidfile % {
-          progname: Sys::Proc.progname
-        }
+        if c.watcher.pidfile
+          c.watcher.pidfile = c.watcher.pidfile % {
+            progname: Sys::Proc.progname
+          }
+        end
       end
     end
 
     # @param [Hash] options
     def watch(options)
       file   = options.fetch(:input)
-      method = options.fetch(:fork) ? :fork : :tap
+      method = options.fetch(:fork) ? :fork : :lock
       action = options.fetch(:'run-once') ? :update : :watch
 
-      Kamaze::DockerHosts::Cli::Watcher
-        .configure(config, network, file)
-        .public_send(method) { |watcher| watcher.public_send(action) }
+      options[:pidfile] = nil unless options[:lock]
+
+      self.config.tap do |config|
+        config.watcher[:pidfile] = options[:pidfile]
+
+        Kamaze::DockerHosts::Cli::Watcher
+          .configure(config, network, file)
+          .public_send(method) { |watcher| watcher.public_send(action) }
+      end
     end
   end
 end
