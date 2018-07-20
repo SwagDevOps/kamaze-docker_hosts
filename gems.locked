@@ -139,7 +139,7 @@ DEPENDENCIES
   hanami-cli (~> 0.2)
   hosts (~> 0.1)
   interesting_methods (~> 0.1)
-  json (~> 2.0)
+  json (~> 2.1)
   kamaze-project (~> 1.0, >= 1.0.3)
   kamaze-version (~> 1.0)
   listen (~> 3.1)

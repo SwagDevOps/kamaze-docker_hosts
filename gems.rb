@@ -15,7 +15,7 @@ group :default do
     gem 'cod', '~> 0.6'
     gem 'figgy', '~> 1.3'
     gem 'hanami-cli', '~> 0.2'
-    gem 'json', '~> 2.0'
+    gem 'json', '~> 2.1'
     gem 'rouge', '~> 3.1'
     gem 'sys-proc', '~> 1.1', '>= 1.1.2'
   end
