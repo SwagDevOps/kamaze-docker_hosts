@@ -110,7 +110,7 @@ class Kamaze::DockerHosts::Cli::Command < Hanami::CLI::Command
   def configure(options)
     config = configurators[:config].call(options.fetch(:config))
 
-    self.singleton_class.define_method(:_config) { config }
+    self.singleton_class.__send__(:define_method, :_config) { config }
     # rubocop:disable Style/AccessModifierDeclarations
     self.singleton_class.class_eval { protected :_config }
     # rubocop:enable Style/AccessModifierDeclarations
