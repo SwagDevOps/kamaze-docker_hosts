@@ -8,7 +8,7 @@
 
 $LOAD_PATH.unshift(__dir__)
 
-self.singleton_class.define_method(:locked?) do
+self.singleton_class.__send__(:define_method, :locked?) do
   Dir.chdir("#{__dir__}/..") do
     [['gems.rb', 'gems.locked'], ['Gemfile', 'Gemfile.lock']]
       .map { |m| 2 == Dir.glob(m).size }
