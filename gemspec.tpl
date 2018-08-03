@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 # vim: ai ts=2 sts=2 et sw=2 ft=ruby
 # rubocop:disable all
-<?rb self.singleton_class
-         .define_method(:quote) { |input| input.to_s.inspect } ?>
+<?rb
+self.singleton_class.__send__(:define_method, :quote) do |input|
+  input.to_s.inspect
+end
+?>
 
 Gem::Specification.new do |s|
   s.name        = #{quote(@name)}
