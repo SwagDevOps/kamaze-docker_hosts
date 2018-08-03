@@ -35,7 +35,8 @@ class Kamaze::DockerHosts::Cli
     def config
       super&.tap do |c|
         c.watcher.pidfile = c.watcher.pidfile % {
-          progname: Sys::Proc.progname
+          progname: Sys::Proc.progname,
+          uid: Process.uid,
         }
       end
     end

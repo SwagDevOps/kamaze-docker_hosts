@@ -43,7 +43,10 @@ class Kamaze::DockerHosts::Cli
     option :pidfile, \
            desc: 'Create pid file',
            aliases: ['-P'],
-           default: config.watcher.pidfile % { progname: Sys::Proc.progname }
+           default: config.watcher.pidfile % {
+             progname: Sys::Proc.progname,
+             uid: Process.uid,
+           }
 
     def call(**options)
       configure(options)
@@ -63,7 +66,8 @@ class Kamaze::DockerHosts::Cli
       super&.tap do |c|
         if c.watcher.pidfile
           c.watcher.pidfile = c.watcher.pidfile % {
-            progname: Sys::Proc.progname
+            progname: Sys::Proc.progname,
+            uid: Process.uid,
           }
         end
       end

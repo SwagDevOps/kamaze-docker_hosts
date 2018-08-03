@@ -2,4 +2,4 @@
 file:    /etc/hosts # default hosts file.
 logger:             # set to false, to disable logging.
 ttl:     10         # duration between polling.
-pidfile: /var/lock/%<progname>s.pid
+pidfile: /var/lock/%<progname>s.%<uid>s.pid

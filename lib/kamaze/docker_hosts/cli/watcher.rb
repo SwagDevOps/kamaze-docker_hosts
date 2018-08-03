@@ -80,6 +80,7 @@ class Kamaze::DockerHosts::Cli::Watcher
       .map { |k, v| "#{k}: #{v}" }.join(', ')
       .tap { |s| log(s) }
 
+    writer.tempfile # break on start if insufficient perms
     inner_watch
   end
 
