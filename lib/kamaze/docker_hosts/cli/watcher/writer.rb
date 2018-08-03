@@ -43,13 +43,13 @@ class Kamaze::DockerHosts::Cli::Watcher::Writer
   # @param [String|Pathname] target
   # @return [Integer]
   def atomic_write(content, tempfile, target)
-    Pathname.new(tempfile.path).write(content).tap do
-      log_error(Errno::ENOENT, Errno::EPERM, pass: true) do
-        utils.touch(self.file)
-        apply_perms(tempfile.path, target)
-      end
+    log_error(Errno::ENOENT, Errno::EPERM) do
+      Pathname.new(tempfile.path).write(content).tap do
+        log_error(Errno::ENOENT, Errno::EPERM, pass: true) do
+          utils.touch(self.file)
+          apply_perms(tempfile.path, target)
+        end
 
-      log_error(Errno::ENOENT, Errno::EPERM) do
         utils.mv(tempfile.path, target)
       end
     end
