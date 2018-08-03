@@ -27,7 +27,9 @@ class Kamaze::DockerHosts::Cli::Watcher::Writer
   # @param [String] content
   # @return [Integer]
   def write(content)
-    atomic_write(content.to_s, Tempfile.new(*dots(self.file)), self.file)
+    log_error(StandardError, pass: false) do
+      atomic_write(content.to_s, Tempfile.new(*dots(self.file)), self.file)
+    end
   end
 
   protected
@@ -43,15 +45,13 @@ class Kamaze::DockerHosts::Cli::Watcher::Writer
   # @param [String|Pathname] target
   # @return [Integer]
   def atomic_write(content, tempfile, target)
-    log_error(Errno::ENOENT, Errno::EPERM) do
-      Pathname.new(tempfile.path).write(content).tap do
-        log_error(Errno::ENOENT, Errno::EPERM, pass: true) do
-          utils.touch(self.file)
-          apply_perms(tempfile.path, target)
-        end
-
-        utils.mv(tempfile.path, target)
+    Pathname.new(tempfile.path).write(content).tap do
+      log_error(Errno::ENOENT, Errno::EPERM, Errno::EACCES, pass: true) do
+        utils.touch(self.file)
+        apply_perms(tempfile.path, target)
       end
+
+      utils.mv(tempfile.path, target)
     end
   end
 
@@ -69,9 +69,7 @@ class Kamaze::DockerHosts::Cli::Watcher::Writer
 
   # @return [File::Stat]
   def stat(path)
-    log_error(Errno::ENOENT, Errno::EPERM) do
-      File.stat(path)
-    end
+    log_error(Errno::ENOENT, Errno::EPERM) { File.stat(path) }
   end
 
   # Prepare arguments for ``Tempfile`` initialization.
