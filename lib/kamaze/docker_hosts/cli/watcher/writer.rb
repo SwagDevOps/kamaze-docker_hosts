@@ -22,14 +22,19 @@ class Kamaze::DockerHosts::Cli::Watcher::Writer
     @utils = FileUtils
   end
 
+  # @return [Tempfile]
+  def tempfile
+    log_error(StandardError, pass: false) do
+      Tempfile.new(*dots(self.file))
+    end
+  end
+
   # Write given content.
   #
   # @param [String] content
   # @return [Integer]
   def write(content)
-    log_error(StandardError, pass: false) do
-      atomic_write(content.to_s, Tempfile.new(*dots(self.file)), self.file)
-    end
+    atomic_write(content.to_s, tempfile, self.file)
   end
 
   protected
