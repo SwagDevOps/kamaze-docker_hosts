@@ -17,4 +17,11 @@ Config directory can also be given from the ``cli`` option
 Config can be displayed (after __overlaying__)
 with the ``config`` command, rendered with JSON notation.
 
+<!--
+Resource consumption:
+
+ps -p $(pidof docker-hosts) -o %cpu,%mem,rss,vsz,cmd
+ps -p $(pidof docker-hosts) -o vsz | awk '{$1=int($1/1024)"M";}{ print;}'
+-->
+
 [docker-api]: https://github.com/swipely/docker-api
